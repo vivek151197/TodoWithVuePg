@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>MyTODO with postgres-vue</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://unpkg.com/vue@next"></script>
+  </head>
+  <body>
+    <div id="app" class="container">
+      <div id="tasks" v-for="(task, index) in tasks">
+        <div
+          :id="index"
+          class="task"
+          v-bind:style="{'border-left': task.bordercolor}"
+        >
+          <input
+            type="checkbox"
+            id="checkbox"
+            v-on:change="checkbox(index, $event, task.id)"
+            :checked="task.done"
+          />
+          <input
+            type="text"
+            id="title"
+            :value="task.title"
+            v-on:blur="updateTitle(index, $event, task.id)"
+            class="title"
+            :class="{done:task.done}"
+          />
+          <span id="date" class="date" v-if="task.duedate!==''"
+            >{{new Date(task.duedate).toLocaleDateString()}}</span
+          >
+          <span id="date" class="date" v-else> </span>
+
+          <button
+            id="details"
+            v-on:click="showHideDetails(index, $event, task.id)"
+            class="Details"
+          >
+            {{task.showhide?"\u25B2":"\u25BC"}}
+          </button>
+          <div id="innerContent" v-show="task.showhide" class="innerContent">
+            <div class="notesdiv">
+              Notes
+              <textarea
+                type="text"
+                id="notes"
+                class="notes"
+                v-on:blur="updateNotes(index, $event, task.id)"
+              >
+{{task.notes}}</textarea
+              >
+            </div>
+            <div class="date-priority">
+              DueDate:
+              <input
+                type="date"
+                id="Duedate"
+                class="duedate"
+                v-on:change="updateDate(index, $event, task.id)"
+                :value="task.duedate"
+              />
+              <br /><br />
+              Priority:
+              <select
+                id="priority"
+                class="priority"
+                v-on:change="updatePriority(index, $event, task.id); priorityBorder(index, task.priority, task.id)"
+              >
+                <option
+                  v-for="priority in priorities"
+                  :value="priority"
+                  :selected="task.priority===priority? true: false"
+                >
+                  {{priority}}
+                </option>
+              </select>
+              <br /><br /><br />
+              <button
+                id="delete"
+                class="deleteTask"
+                v-on:click="deleteTask(index, $event, task.id)"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="inputValue" class="inputvalue">
+        +
+        <input
+          type="text"
+          id="input"
+          v-on:keyup.enter="addTask"
+          v-model="title"
+          class="inputVal"
+          placeholder="New task..."
+          :autofocus="true"
+        />
+      </div>
+      <div class="DoneTasksdiv" v-show="doneTasks.length > 0">
+        <input
+          class="doneTasks"
+          type="button"
+          value="&#128269; Show Done Tasks"
+          v-on:click="showHideDoneTasks(showDone, $event)"
+        />
+        <button class="clearDoneTasks" v-on:click="clearDoneTasks()">
+          Clear Done Tasks
+        </button>
+      </div>
+      <button v-on:click="clearAllTasks" class="clearAllTasks">
+        Clear all Tasks
+      </button>
+    </div>
+  </body>
+
+  <script src="index.js"></script>
+</html>
